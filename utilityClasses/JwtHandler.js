@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 class JwtHandler {
   //hashing password
   static async hashPassword(password) {
@@ -15,6 +16,11 @@ class JwtHandler {
       expiresIn: expiration,
     });
     return token;
+  }
+  //verify token
+  static async verifyToken(token) {
+    const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+    return decoded;
   }
 }
 

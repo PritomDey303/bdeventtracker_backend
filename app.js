@@ -25,6 +25,7 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 DatabaseConfig.config();
 
 //routes
+app.use("/auth", require("./routes/authRoute"));
 //notfound handler
 app.use(notFoundHandler);
 //error handler

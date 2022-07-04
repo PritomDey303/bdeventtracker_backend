@@ -29,7 +29,19 @@ class EmailHandler {
           <p>You must verify your email address to complete your registration.</p>
           <p>Please click the link below to verify your email address:</p>
           <a href="${process.env.CLIENT_URL}/auth/verify/${token}">
-            ${process.env.CLIENT_URL}/auth/verify/${token}
+            <button>Verify Email</button>
+          </a>
+          <p>If you did not sign up to our site, please ignore this email.</p>
+        `;
+    return html;
+  }
+  //forget password email builder
+  async forgetPasswordEmailBuilder(token) {
+    const html = `
+          <h1>Reset your password</h1>
+          <p>You have requested to reset your password. Please click the link below to reset your password:</p>
+          <a href="${process.env.CLIENT_URL}/auth/reset-password/${token}">
+            <button>Reset Password</button>
           </a>
           <p>If you did not sign up to our site, please ignore this email.</p>
         `;
