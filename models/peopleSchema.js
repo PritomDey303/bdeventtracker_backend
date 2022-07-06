@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const peopleSchema = new Schema(
   {
-    name: {
+    username: {
       type: String,
       trim: true,
     },
@@ -21,6 +21,11 @@ const peopleSchema = new Schema(
     isVerified: {
       type: Boolean,
       default: false,
+    },
+    accountType: {
+      type: String,
+      enum: ["organization", "user", "admin"],
+      required: true,
     },
   },
   {

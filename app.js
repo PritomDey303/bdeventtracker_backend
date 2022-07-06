@@ -26,6 +26,7 @@ DatabaseConfig.config();
 
 //routes
 app.use("/auth", require("./routes/authRoute"));
+app.use("/event", require("./routes/eventRoute"));
 //notfound handler
 app.use(notFoundHandler);
 //error handler

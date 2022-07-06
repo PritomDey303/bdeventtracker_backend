@@ -36,7 +36,7 @@ class EmailHandler {
     return html;
   }
   //forget password email builder
-  async forgetPasswordEmailBuilder(token) {
+  async forgotPasswordEmailBuilder(token) {
     const html = `
           <h1>Reset your password</h1>
           <p>You have requested to reset your password. Please click the link below to reset your password:</p>

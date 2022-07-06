@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 class QueryHandler {
   constructor(model) {
     this.model = model;
@@ -22,7 +23,8 @@ class QueryHandler {
     return await this.model.findByIdAndUpdate(id, data);
   }
   async updateDataById(id, data) {
-    return await this.model.findByIdAndUpdate(id, data);
+    let userId = mongoose.Types.ObjectId(id);
+    return await this.model.findByIdAndUpdate(userId, data);
   }
   async updateDataByEmail(email, data) {
     return await this.model.findOneAndUpdate({ email: email }, data);
@@ -32,6 +34,29 @@ class QueryHandler {
   }
   async deleteAllData() {
     return await this.model.deleteMany({});
+  }
+
+  async getPaginationData(page, limit) {
+    return await this.model
+      .find()
+      .skip(page * limit)
+      .limit(limit);
+  }
+  async getSortedData(sortBy, sortOrder) {
+    return await this.model.find().sort({ [sortBy]: sortOrder });
+  }
+  async getDataOnTheBaseOfNearby(lat, lng, distance) {
+    return await this.model.find({
+      location: {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: [lng, lat],
+          },
+          $maxDistance: distance,
+        },
+      },
+    });
   }
 }
 module.exports = QueryHandler;

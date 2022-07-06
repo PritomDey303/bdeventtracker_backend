@@ -12,7 +12,7 @@ const Email = new EmailHandler();
 ////////////////////////////
 async function signup(req, res, next) {
   try {
-    const { email, password, name } = req.body;
+    const { email, password, username, accountType } = req.body;
 
     const user = await User.findDataByEmail(email);
     if (user.length > 0) {
@@ -22,8 +22,9 @@ async function signup(req, res, next) {
       const userObj = {
         email: email,
         password: hashedPassword,
-        name: name,
+        username: username,
         isVerified: false,
+        accountType: accountType,
       };
       const token = await JwtHandler.generateToken(userObj, "1h");
       const body = await Email.verificationEmailBuilder(token);
@@ -51,15 +52,21 @@ async function signup(req, res, next) {
 async function signin(req, res, next) {
   try {
     const { email, password } = req.body;
-    const user = await User.findDataByEmail({ email: email });
-    if (!user) {
+    const user = await User.findDataByEmail(email);
+    if (!user || !user.isVerified) {
       return res.json({ status: 400, message: "User does not exist" });
     } else {
       const match = await JwtHandler.comparePassword(password, user.password);
       if (match) {
-        const token = await JwtHandler.generateToken(user, "24h");
+        userObj = {
+          email: user.email,
+          username: user.username,
+          accountType: user.accountType,
+          _id: user._id,
+        };
+        const token = await JwtHandler.generateToken(userObj, "24h");
         //setting token into cookie
-        res.cookie(process.env.COOKIE_NAME, token, {
+        res.cookie(process.env.COOKIE_username, token, {
           maxAge: 1000 * 60 * 60 * 24,
           httpOnly: true,
           signed: true,
@@ -81,7 +88,7 @@ async function signin(req, res, next) {
 ///////////////////////////
 async function signout(req, res, next) {
   try {
-    res.clearCookie(process.env.COOKIE_NAME);
+    res.clearCookie(process.env.COOKIE_username);
     return res.json({ status: 200, message: "Sign out successful." });
   } catch (err) {
     res.json({
@@ -118,11 +125,17 @@ async function emailVerification(req, res, next) {
 async function forgotPassword(req, res, next) {
   try {
     const { email } = req.body;
-    const user = await User.findDataByEmail({ email: email });
+    const user = await User.findDataByEmail(email);
     if (!user) {
       return res.json({ status: 400, message: "User does not exist" });
     } else {
-      const token = await JwtHandler.generateToken(user, "1h");
+      const userObj = {
+        email: user.email,
+        username: user.username,
+        _id: user._id,
+        accountType: user.accountType,
+      };
+      const token = await JwtHandler.generateToken(userObj, "1h");
       const body = await Email.forgotPasswordEmailBuilder(token);
       const info = await Email.sendEmail(email, "Reset your password.", body);
       return res.json({ status: 200, message: "Password reset email sent" });
@@ -142,13 +155,14 @@ async function resetPassword(req, res, next) {
   try {
     const { token } = req.params;
     const decoded = await JwtHandler.verifyToken(token);
-    const user = await User.findDataByEmail({ email: decoded.email });
+    const user = await User.findDataByEmail(decoded.email);
     if (!user) {
       return res.json({ status: 400, message: "User does not exist" });
     } else {
       const { password } = req.body;
       const hashedPassword = await JwtHandler.hashPassword(password);
-      await User.updateDataById(decoded.id, { password: hashedPassword });
+      await User.updateDataById(decoded._id, { password: hashedPassword });
+      console.log(password);
       return res.json({ status: 200, message: "Password reset successful." });
     }
   } catch (err) {
@@ -165,7 +179,7 @@ async function resetPassword(req, res, next) {
 async function changePassword(req, res, next) {
   try {
     const { oldPassword, newPassword } = req.body;
-    const user = await User.findDataByEmail({ email: req.user.email });
+    const user = await User.findDataByEmail(req.user.email);
     if (!user) {
       return res.json({ status: 400, message: "User does not exist" });
     } else {
@@ -175,10 +189,10 @@ async function changePassword(req, res, next) {
       );
       if (match) {
         const hashedPassword = await JwtHandler.hashPassword(newPassword);
-        await User.updateDataById(user.id, { password: hashedPassword });
+        await User.updateDataById(user._id, { password: hashedPassword });
         return res.json({
           status: 200,
-          message: "Password changed successful.",
+          message: "Password changed successfully.",
         });
       } else {
         return res.json({ status: 400, message: "Password is incorrect" });
@@ -194,17 +208,45 @@ async function changePassword(req, res, next) {
 ///////////////////////////
 //keep user logged in using signed  cookies
 ///////////////////////////
-async function keepLoggedIn(req, res, next) {
+async function checkLoggedIn(req, res, next) {
   try {
-    const token = req.signedCookies[process.env.COOKIE_NAME];
+    const token = req.signedCookies[process.env.COOKIE_username];
     if (token) {
       const decoded = await JwtHandler.verifyToken(token);
-      const user = await User.findDataByEmail({ email: decoded.email });
+      const user = await User.findDataByEmail(decoded.email);
       if (user) {
+        req.user = user;
         return next();
       }
     } else {
       return res.redirect("/");
+    }
+  } catch (err) {
+    res.json({
+      status: 500,
+      message: err.message,
+    });
+  }
+}
+///////////////////////////
+//check login status
+///////////////////////////
+async function checkLoginStatus(req, res, next) {
+  try {
+    const user = await User.findDataByEmail({ email: req.user.email });
+    if (user) {
+      return res.json({
+        status: 200,
+        message: "User is logged in.",
+        user: {
+          email: user.email,
+          username: user.username,
+          _id: user._id,
+          accountType: user.accountType,
+        },
+      });
+    } else {
+      return res.json({ status: 400, message: "User is not logged in." });
     }
   } catch (err) {
     res.json({
@@ -222,5 +264,6 @@ module.exports = {
   forgotPassword,
   resetPassword,
   changePassword,
-  keepLoggedIn,
+  checkLoggedIn,
+  checkLoginStatus,
 };

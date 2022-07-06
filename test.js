@@ -1,4 +1,12 @@
-const token = await user.generateAuthToken();
-const html = await user.verificationEmailBuilder(token);
-const info = await user.sendEmail(email, "Verify your email address", html);
-return res.status(200).json({ message: "Verification email sent" });
+//multer multipart/form-data handle in oop way
+class Test {
+  constructor(folder) {
+    this.folderName = folder;
+  }
+
+  uploadImage(req, res, next) {
+    console.log(this.folderName);
+  }
+}
+const test = new Test("event-images");
+test.uploadImage();
