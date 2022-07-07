@@ -56,6 +56,7 @@ async function eventImageCloudinaryUpload(req, res, next) {
         fs.unlinkSync(path);
       }
       req.eventBannerImage = urls;
+      console.log(req.eventBannerImage);
       next();
     } else {
       res.json({
@@ -93,6 +94,36 @@ async function eventCreate(req, res, next) {
     res.json({
       status: 500,
       message: "Error in creating event",
+    });
+  }
+}
+
+//////////////////////////
+//update event
+//////////////////////////
+async function updateEvent(req, res, next) {
+  try {
+    const eventUpdatedData = await EventObj.findDataById(req.params.id);
+    let event_banner_image = [];
+    if (req.eventBannerImage.length > 0) {
+      event_banner_image = req.eventBannerImage;
+    } else {
+      event_banner_image = eventUpdatedData.event_banner_image;
+    }
+    const eventData = await EventObj.updateData(req.params.id, {
+      ...req.body,
+      event_banner_image: event_banner_image,
+    });
+    res.json({
+      status: 200,
+      message: "Event updated successfully.",
+      data: eventData,
+    });
+  } catch (err) {
+    const info = await MulterUploader.deleteImages(req.eventBannerImage);
+    res.json({
+      status: 500,
+      message: "Error in updating event",
     });
   }
 }
@@ -157,6 +188,44 @@ async function getEventsByUserId(req, res, next) {
   }
 }
 
+////////////////////////////////////////////
+//get filtered event
+////////////////////////////////////////////
+async function getFilteredEvents(req, res, next) {
+  try {
+    const {
+      event_name,
+      event_type,
+      start_date,
+      end_date,
+      lat,
+      lng,
+      distance,
+      limit,
+    } = req.body;
+    const events = await EventObj.getFilteredEventData(
+      event_name,
+      event_type,
+      start_date,
+      end_date,
+      lat,
+      lng,
+      distance,
+      limit
+    );
+    res.json({
+      status: 200,
+      message: "Events fetched successfully.",
+      data: events,
+    });
+  } catch (err) {
+    res.json({
+      status: 500,
+      message: "Error in fetching events",
+    });
+  }
+}
+
 module.exports = {
   eventImageMulterUpload,
   eventImageCloudinaryUpload,
@@ -164,4 +233,5 @@ module.exports = {
   getAllEvents,
   getEventById,
   getEventsByUserId,
+  updateEvent,
 };

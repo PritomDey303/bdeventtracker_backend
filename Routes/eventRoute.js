@@ -21,6 +21,5 @@ router.post(
   addEventValidationHandler,
   eventCreate
 );
-router.get("/", getAllEvents);
 
 module.exports = router;
