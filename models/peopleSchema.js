@@ -24,7 +24,7 @@ const peopleSchema = new Schema(
     },
     accountType: {
       type: String,
-      enum: ["organization", "user", "admin"],
+      enum: ["user", "admin"],
       required: true,
     },
   },

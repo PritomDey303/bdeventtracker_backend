@@ -3,7 +3,12 @@ const {
   eventImageMulterUpload,
   eventImageCloudinaryUpload,
   eventCreate,
+  getAllEvents,
 } = require("../controller/eventController");
+const {
+  addEventValidators,
+  addEventValidationHandler,
+} = require("../middlewares/event/eventValidators");
 
 const router = express.Router();
 
@@ -12,6 +17,10 @@ router.post(
   "/create",
   eventImageMulterUpload,
   eventImageCloudinaryUpload,
+  addEventValidators,
+  addEventValidationHandler,
   eventCreate
 );
+router.get("/", getAllEvents);
+
 module.exports = router;

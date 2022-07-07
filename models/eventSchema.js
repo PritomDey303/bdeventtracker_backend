@@ -20,7 +20,7 @@ const eventSchema = new mongoose.Schema(
       type: Array,
       required: true,
     },
-    event_Description: {
+    event_description: {
       type: String,
       required: true,
       trim: true,
@@ -34,7 +34,36 @@ const eventSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    event_organizer: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    event_organizer_mobile: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    event_organizer_email: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    event_organizer_facebook: {
+      type: String,
+      trim: true,
+    },
+    event_organizer_website: {
+      type: String,
+      trim: true,
+    },
+    user_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
   { timestamps: true }
 );
-module.exports = mongoose.model("Event", eventSchema);
+const Event = mongoose.model("Event", eventSchema);
+module.exports = Event;

@@ -6,6 +6,9 @@ class QueryHandler {
   async findData(query) {
     return await this.model.find(query);
   }
+  async findSortedData(query, sortBy, sortOrder) {
+    return await this.model.find(query).sort({ [sortBy]: sortOrder });
+  }
   async findDataById(id) {
     return await this.model.findById(id);
   }

@@ -25,7 +25,7 @@ class CloudinaryUploader {
       );
     });
   }
-  async deleteMultipleImages(urls) {
+  async deleteImages(urls) {
     urls.map((url) => {
       cloudinary.uploader.destroy(url.public_id);
     });
