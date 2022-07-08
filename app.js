@@ -27,6 +27,8 @@ DatabaseConfig.config();
 //routes
 app.use("/auth", require("./routes/authRoute"));
 app.use("/event", require("./routes/eventRoute"));
+app.use("/comment", require("./routes/commentRoute"));
+app.use("/reply", require("./routes/replyRoute"));
 //notfound handler
 app.use(notFoundHandler);
 //error handler

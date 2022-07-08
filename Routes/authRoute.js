@@ -6,8 +6,8 @@ const {
   signout,
   forgotPassword,
   resetPassword,
-  checkLoggedIn,
   changePassword,
+  checkLogin,
 } = require("../controller/authController");
 const {
   addPeopleValidators,
@@ -22,10 +22,10 @@ router.get("/verification/:token", emailVerification);
 //signin routes
 router.post("/signin", addPeopleValidators, addPeopleValidationHandler, signin);
 //signout routes
-router.post("/signout", signout);
+router.post("/signout", checkLogin, signout);
 //forgot password routes
 router.post("/forgot_password", forgotPassword);
 router.post("/reset_password/:token", resetPassword);
 //change password routes
-router.post("/change_password", checkLoggedIn, changePassword);
+router.post("/change_password", checkLogin, changePassword);
 module.exports = router;

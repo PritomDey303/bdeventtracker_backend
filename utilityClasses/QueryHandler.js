@@ -33,43 +33,16 @@ class QueryHandler {
   async updateDataByEmail(email, data) {
     return await this.model.findOneAndUpdate({ email: email }, data);
   }
-  async deleteData(id) {
-    return await this.model.findByIdAndDelete(id);
+  async deleteData(query) {
+    return await this.model.deleteOne(query);
+  }
+  async deleteDataById(id) {
+    let Id = mongoose.Types.ObjectId(id);
+    return await this.model.findByIdAndDelete(Id);
   }
   async deleteAllData() {
     return await this.model.deleteMany({});
   }
-
-  async getPaginationData(page, limit) {
-    return await this.model
-      .find()
-      .skip(page * limit)
-      .limit(limit);
-  }
-  async getSortedData(sortBy, sortOrder) {
-    return await this.model.find().sort({ [sortBy]: sortOrder });
-  }
-  async getDataOnTheBaseOfNearby(lat, lng, distance) {
-    return await this.model.find({
-      location: {
-        $near: {
-          $geometry: {
-            type: "Point",
-            coordinates: [lng, lat],
-          },
-          $maxDistance: distance,
-        },
-      },
-    });
-  }
-  async getDataOnTheBasisOfUpcomingDate(date) {
-    return await this.model.find({
-      event_date: {
-        $gte: date,
-      },
-    });
-  }
-
   //get filtered events
   async getFilteredEventData(
     eventName,

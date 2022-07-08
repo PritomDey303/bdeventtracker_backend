@@ -3,6 +3,12 @@ const Event = require("../models/eventSchema");
 const CloudinaryUploader = require("../utilityClasses/CloudinaryUploader");
 const QueryHandler = require("../utilityClasses/QueryHandler");
 const MulterUploader = require("../utilityFunctions/multerUploader");
+const Comment = require("../models/commentSchema");
+
+///////////////////
+//comment object
+///////////////////
+const commentHander = new QueryHandler(Comment);
 /////////////
 //event object
 /////////////
@@ -226,6 +232,29 @@ async function getFilteredEvents(req, res, next) {
   }
 }
 
+//////////////////////////
+//delete event
+///////////////////////////
+async function deleteEvent(req, res, next) {
+  try {
+    const event = await EventObj.findDataById(req.params.id);
+    const images = event.event_banner_image;
+    await EventObj.deleteDataById(req.params.id);
+    await CloudinaryUploader.deleteImages(images);
+    await commentHander.deleteData({
+      event: mongoose.Types.ObjectId(req.params.id),
+    });
+    res.json({
+      status: 200,
+      message: "Event deleted successfully.",
+    });
+  } catch (err) {
+    res.json({
+      status: 500,
+      message: "Error in deleting event",
+    });
+  }
+}
 module.exports = {
   eventImageMulterUpload,
   eventImageCloudinaryUpload,
@@ -234,4 +263,6 @@ module.exports = {
   getEventById,
   getEventsByUserId,
   updateEvent,
+  getFilteredEvents,
+  deleteEvent,
 };

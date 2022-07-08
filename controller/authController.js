@@ -208,7 +208,7 @@ async function changePassword(req, res, next) {
 ///////////////////////////
 //keep user logged in using signed  cookies
 ///////////////////////////
-async function checkLoggedIn(req, res, next) {
+async function checkLogin(req, res, next) {
   try {
     const token = req.signedCookies[process.env.COOKIE_username];
     if (token) {
@@ -264,6 +264,6 @@ module.exports = {
   forgotPassword,
   resetPassword,
   changePassword,
-  checkLoggedIn,
+  checkLogin,
   checkLoginStatus,
 };
