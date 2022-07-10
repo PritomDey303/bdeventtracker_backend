@@ -34,7 +34,6 @@ app.use("/notification", require("./routes/notificationRoute"));
 app.use(notFoundHandler);
 //error handler
 app.use(errorHandler);
-
 //port setup
 app.listen(process.env.PORT || 5000, () => {
   console.log(`Server started at port ${5000}`);
