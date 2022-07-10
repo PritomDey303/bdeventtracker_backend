@@ -14,7 +14,7 @@ async function signup(req, res, next) {
   try {
     const { email, password, username, accountType } = req.body;
 
-    const user = await User.findDataByEmail(email);
+    const user = await User.findData({ email: email });
     if (user.length > 0) {
       return res.json({ status: 400, message: "User already exists" });
     } else {
