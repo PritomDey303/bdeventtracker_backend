@@ -62,6 +62,14 @@ const eventSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    event_attendees: {
+      type: Array,
+      required: true,
+    },
+    event_attendees_count: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );

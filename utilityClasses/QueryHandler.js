@@ -33,8 +33,13 @@ class QueryHandler {
   async updateDataByEmail(email, data) {
     return await this.model.findOneAndUpdate({ email: email }, data);
   }
+  //update many data
+  async updateManyData(query, data) {
+    return await this.model.updateMany(query, data);
+  }
+
   async deleteData(query) {
-    return await this.model.deleteOne(query);
+    return await this.model.deleteMany(query);
   }
   async deleteDataById(id) {
     let Id = mongoose.Types.ObjectId(id);

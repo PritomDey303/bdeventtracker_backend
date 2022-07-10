@@ -7,7 +7,7 @@ const {
 } = require("../controller/replyController");
 const router = express.Router();
 
-router.get("/", getAllReplies);
-router.post("/post", checkLogin, postReply);
+router.get("/:comment_id", getAllReplies);
+router.post("/post/:comment_id", checkLogin, postReply);
 router.delete("/delete/:reply_id", checkLogin, deleteReply);
 module.exports = router;

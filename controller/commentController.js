@@ -11,7 +11,8 @@ const replyHandler = new QueryHandler(Reply);
 /////////////////
 async function postComment(req, res) {
   try {
-    const { comment, event_id } = req.body;
+    const { comment } = req.body;
+    const event_id = req.params.event_id;
     const user_id = req.user._id;
     const commentData = {
       comment,
@@ -22,6 +23,7 @@ async function postComment(req, res) {
     await commentHanlder.insertData(commentData);
 
     res.status(200).json({
+      status: 200,
       message: "comment added successfully",
     });
   } catch (error) {
@@ -44,11 +46,12 @@ async function getAllComments(req, res) {
       -1
     );
     res.status(200).json({
-      comments,
+      message: "comments fetched successfully",
+      data: comments,
     });
   } catch (error) {
     res.status(500).json({
-      message: "error getting comments",
+      message: "Error getting comments",
       error,
     });
   }
@@ -59,14 +62,19 @@ async function getAllComments(req, res) {
 /////////////////
 async function deleteComment(req, res) {
   try {
-    const comment_id = req.params.comment_id;
+    const comment_id = req.query.comment_id;
     const event_id = req.query.event_id;
     //find event owner by event id
     const eventdata = await eventHanlder.findDataById(event_id);
-    const event_owner = eventdata.user.toString();
-    const user_id = req.user._id;
+    //console.log(eventdata.user_id.toString());
+    const event_owner = eventdata.user_id.toString();
+    //console.log(event_owner);
+    const user_id = req.user._id.toString();
+    console.log(user_id);
     const comment = await commentHanlder.findDataById(comment_id);
+    console.log(comment);
     if (comment.user.toString() === user_id || event_owner === user_id) {
+      console.log("comment deleted.");
       await commentHanlder.deleteDataById(comment_id);
       await replyHandler.deleteData({
         comment: mongoose.Types.ObjectId(comment_id),

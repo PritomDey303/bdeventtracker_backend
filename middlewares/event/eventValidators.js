@@ -60,10 +60,6 @@ const addEventValidators = [
     .withMessage("Invalid website url")
     .trim()
     .optional(),
-  check("user_id")
-    .isLength({ min: 1 })
-    .withMessage("User_id is required")
-    .trim(),
 ];
 
 const addEventValidationHandler = async function (req, res, next) {

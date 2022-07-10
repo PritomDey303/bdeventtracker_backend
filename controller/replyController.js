@@ -11,20 +11,23 @@ const mongoose = require("mongoose");
 ///////////////////
 async function postReply(req, res) {
   try {
-    const { reply, comment_id } = req.body;
+    const { reply } = req.body;
+    const comment_id = req.params.comment_id;
     const user_id = req.user._id;
     const replyData = {
       reply,
       user: mongoose.Types.ObjectId(user_id),
       comment: mongoose.Types.ObjectId(comment_id),
     };
-    const replyObj = await replyHandler.insertData(replyData);
+    await replyHandler.insertData(replyData);
     res.status(200).json({
+      status: 200,
       message: "Reply added successfully",
     });
   } catch (error) {
     res.status(500).json({
-      message: "error adding reply",
+      status: 500,
+      message: "Error adding reply",
       error,
     });
   }
@@ -64,8 +67,10 @@ async function deleteReply(req, res) {
     const reply = await replyHandler.findData({
       _id: mongoose.Types.ObjectId(reply_id),
     });
-    if (reply.user.toString() === user_id.toString()) {
-      await replyHandler.deleteData(reply_id);
+
+    if (reply[0].user.toString() === user_id.toString()) {
+      //console.log("user is owner of reply");
+      await replyHandler.deleteDataById(reply_id);
       res.status(200).json({
         message: "Reply deleted successfully",
       });

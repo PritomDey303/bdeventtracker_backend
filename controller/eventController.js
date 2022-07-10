@@ -4,11 +4,14 @@ const CloudinaryUploader = require("../utilityClasses/CloudinaryUploader");
 const QueryHandler = require("../utilityClasses/QueryHandler");
 const MulterUploader = require("../utilityFunctions/multerUploader");
 const Comment = require("../models/commentSchema");
-
+const Reply = require("../models/replySchema");
+const NotificationHandler = require("../utilityClasses/NotificationHandler");
+const mongoose = require("mongoose");
 ///////////////////
 //comment object
 ///////////////////
-const commentHander = new QueryHandler(Comment);
+const commentHandler = new QueryHandler(Comment);
+const replyHandler = new QueryHandler(Reply);
 /////////////
 //event object
 /////////////
@@ -88,8 +91,16 @@ async function eventCreate(req, res, next) {
   try {
     const eventData = await EventObj.insertData({
       ...req.body,
+      user_id: mongoose.Types.ObjectId(req.user._id),
       event_banner_image: req.eventBannerImage,
     });
+    body = "Event created successfully.";
+    await NotificationHandler.saveNotification(
+      body,
+      eventData.user_id,
+      eventData.user_id,
+      eventData._id
+    );
     res.json({
       status: 200,
       message: "Event created successfully.",
@@ -118,6 +129,7 @@ async function updateEvent(req, res, next) {
     }
     const eventData = await EventObj.updateData(req.params.id, {
       ...req.body,
+      user_id: mongoose.Types.ObjectId(req.user._id),
       event_banner_image: event_banner_image,
     });
     res.json({
@@ -241,7 +253,8 @@ async function deleteEvent(req, res, next) {
     const images = event.event_banner_image;
     await EventObj.deleteDataById(req.params.id);
     await CloudinaryUploader.deleteImages(images);
-    await commentHander.deleteData({
+
+    await commentHandler.deleteData({
       event: mongoose.Types.ObjectId(req.params.id),
     });
     res.json({
@@ -266,3 +279,4 @@ module.exports = {
   getFilteredEvents,
   deleteEvent,
 };
+//delete reply and comment when event is deleted
