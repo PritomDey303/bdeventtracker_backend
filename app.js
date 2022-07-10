@@ -5,7 +5,7 @@ const {
   errorHandler,
   notFoundHandler,
 } = require("./middlewares/common/errorHandler");
-const DatabaseConfig = require("./utilityClasses/databaseConfig");
+const DatabaseConfig = require("./utilityClasses/DatabaseConfig");
 const app = express();
 const cookieParser = require("cookie-parser");
 //configureing dotenv file
