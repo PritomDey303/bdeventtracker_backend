@@ -36,5 +36,6 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 //port setup
-port = process.env.PORT || 5000;
-app.listen(port);
+app.listen(process.env.PORT || 5000, () => {
+  console.log(`Server started at port ${5000}`);
+});
