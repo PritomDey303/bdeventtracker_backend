@@ -14,7 +14,7 @@ const {
   addPeopleValidationHandler,
 } = require("../middlewares/people/peopleValidator");
 const router = express.Router();
-
+console.log("routes");
 //signup routes
 router.post("/signup", addPeopleValidators, addPeopleValidationHandler, signup);
 router.get("/verification/:token", emailVerification);
