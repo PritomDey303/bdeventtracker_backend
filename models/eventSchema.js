@@ -32,6 +32,11 @@ const eventSchema = new mongoose.Schema(
     event_type: {
       type: String,
       required: true,
+      enum: ["offline", "online", "both"],
+    },
+    event_category: {
+      type: String,
+      required: true,
       trim: true,
     },
     event_organizer: {
@@ -61,14 +66,6 @@ const eventSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-    },
-    event_attendees: {
-      type: Array,
-      required: true,
-    },
-    event_attendees_count: {
-      type: Number,
-      default: 0,
     },
   },
   { timestamps: true }

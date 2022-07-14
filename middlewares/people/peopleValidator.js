@@ -27,7 +27,7 @@ const addPeopleValidationHandler = function (req, res, next) {
   if (Object.keys(mappedErrors).length === 0) {
     next();
   } else {
-    return res.status(400).json({
+    return res.json({
       status: 400,
       message: mappedErrors,
     });
