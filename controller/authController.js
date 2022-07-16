@@ -102,7 +102,7 @@ async function signout(req, res, next) {
 ///////////////////////////
 async function emailVerification(req, res, next) {
   try {
-    const { token } = req.params;
+    const { token } = req.body;
     const decoded = await JwtHandler.verifyToken(token);
     const user = await User.findDataByEmail(decoded.email);
     if (user.isVerified) {

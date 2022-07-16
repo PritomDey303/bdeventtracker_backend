@@ -17,7 +17,7 @@ const router = express.Router();
 console.log("routes");
 //signup routes
 router.post("/signup", addPeopleValidators, addPeopleValidationHandler, signup);
-router.get("/verification/:token", emailVerification);
+router.post("/verification/:token", emailVerification);
 
 //signin routes
 router.post("/signin", addPeopleValidators, addPeopleValidationHandler, signin);
