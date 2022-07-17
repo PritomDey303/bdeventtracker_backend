@@ -10,10 +10,13 @@ const app = express();
 const cookieParser = require("cookie-parser");
 //configureing dotenv file
 dotenv.config();
-//using cors
+//using cors middleware
+//cors
 app.use(
   cors({
-    origin: "*",
+    origin: process.env.CLIENT_URL,
+    methods: ["GET", "POST", " DELETE", "UPDATE", "PUT", " PATCH"],
+    credentials: true,
   })
 );
 // request parsers

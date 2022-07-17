@@ -66,7 +66,7 @@ async function signin(req, res, next) {
         };
         const token = await JwtHandler.generateToken(userObj, "24h");
         //setting token into cookie
-        res.cookie(process.env.COOKIE_username, token, {
+        res.cookie(process.env.COOKIE_NAME, token, {
           maxAge: 1000 * 60 * 60 * 24,
           httpOnly: true,
           signed: true,
@@ -92,7 +92,7 @@ async function signin(req, res, next) {
 ///////////////////////////
 async function signout(req, res, next) {
   try {
-    res.clearCookie(process.env.COOKIE_username);
+    res.clearCookie(process.env.COOKIE_NAME);
     return res.json({ status: 200, message: "Sign out successful." });
   } catch (err) {
     res.json({
@@ -216,7 +216,8 @@ async function changePassword(req, res, next) {
 ///////////////////////////
 async function checkLogin(req, res, next) {
   try {
-    const token = req.signedCookies[process.env.COOKIE_username];
+    const token = req.signedCookies[process.env.COOKIE_NAME];
+    console.log(token);
     if (token) {
       const decoded = await JwtHandler.verifyToken(token);
       const user = await User.findDataByEmail(decoded.email);
