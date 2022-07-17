@@ -22,7 +22,7 @@ router.post("/verification", emailVerification);
 //signin routes
 router.post("/signin", addPeopleValidators, addPeopleValidationHandler, signin);
 //signout routes
-router.post("/signout", checkLogin, signout);
+router.delete("/signout", checkLogin, signout);
 //forgot password routes
 router.post("/forgot_password", forgotPassword);
 router.post("/reset_password/:token", resetPassword);
