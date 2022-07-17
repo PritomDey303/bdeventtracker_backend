@@ -71,7 +71,11 @@ async function signin(req, res, next) {
           httpOnly: true,
           signed: true,
         });
-        return res.json({ status: 200, message: "Sign in successful." });
+        return res.json({
+          status: 200,
+          message: "Sign in successful.",
+          data: userObj,
+        });
       } else {
         return res.json({ status: 400, message: "Password is incorrect" });
       }
@@ -109,6 +113,8 @@ async function emailVerification(req, res, next) {
       return res.json({ status: 400, message: "User already verified." });
     } else {
       await User.updateDataByEmail(decoded.email, { isVerified: true });
+      //welcome notification
+
       return res.json({ status: 200, message: "User verified." });
     }
   } catch (err) {
@@ -238,7 +244,7 @@ async function checkLoginStatus(req, res, next) {
       return res.json({
         status: 200,
         message: "User is logged in.",
-        user: {
+        data: {
           email: user.email,
           username: user.username,
           _id: user._id,
