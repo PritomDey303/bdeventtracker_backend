@@ -9,7 +9,11 @@ const addEventValidators = [
     .withMessage("Event name must not contain anything other than alphabet")
     .trim()
     .optional(),
-  check("event_date").isDate().withMessage("Invalid date").optional(),
+  check("event_date")
+    .isDate({ format: "DD/MM/YYYY" })
+    .withMessage("Invalid date")
+    .withMessage("Invalid date")
+    .optional(),
   check("event_time")
     .isLength({ min: 1 })
     .withMessage("Event_time is required")
@@ -21,7 +25,7 @@ const addEventValidators = [
     .optional(),
   check("event_description")
     .isLength({ min: 10 })
-    .withMessage("Event_description is required")
+    .withMessage("Event_description must be atleast 10 characters long")
     .trim()
     .optional(),
   check("event_banner_image")
@@ -70,7 +74,7 @@ const addEventValidationHandler = async function (req, res, next) {
   } else {
     const cloudinaryObj = new CloudinaryUploader();
     const info = await cloudinaryObj.deleteImages(req.eventBannerImage);
-    return res.status(400).json({
+    return res.json({
       status: 400,
       message: mappedErrors,
     });

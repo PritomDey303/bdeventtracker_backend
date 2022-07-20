@@ -8,6 +8,7 @@ const {
   resetPassword,
   changePassword,
   checkLogin,
+  checkLoginStatus,
 } = require("../controller/authController");
 const {
   addPeopleValidators,
@@ -28,4 +29,6 @@ router.post("/forgot_password", forgotPassword);
 router.post("/reset_password/:token", resetPassword);
 //change password routes
 router.post("/change_password", checkLogin, changePassword);
+//get log in user data
+router.get("/user", checkLogin, checkLoginStatus);
 module.exports = router;

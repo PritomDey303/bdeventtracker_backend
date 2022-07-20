@@ -1,3 +1,4 @@
+const { json } = require("express");
 const People = require("../models/peopleSchema");
 const EmailHandler = require("../utilityClasses/EmailHandler");
 const JwtHandler = require("../utilityClasses/JwtHandler");
@@ -7,6 +8,7 @@ const QueryHandler = require("../utilityClasses/QueryHandler");
 const User = new QueryHandler(People);
 //Email object making
 const Email = new EmailHandler();
+//cloudinaryUploader object
 ////////////////////////////
 //sign up handler
 ////////////////////////////
@@ -217,7 +219,6 @@ async function changePassword(req, res, next) {
 async function checkLogin(req, res, next) {
   try {
     const token = req.signedCookies[process.env.COOKIE_NAME];
-    console.log(token);
     if (token) {
       const decoded = await JwtHandler.verifyToken(token);
       const user = await User.findDataByEmail(decoded.email);
@@ -240,17 +241,21 @@ async function checkLogin(req, res, next) {
 ///////////////////////////
 async function checkLoginStatus(req, res, next) {
   try {
-    const user = await User.findDataByEmail({ email: req.user.email });
+    const user = await User.findData({ email: req.user.email });
     if (user) {
+      console.log(user);
+      const userData = {
+        email: user[0].email,
+        username: user[0].username,
+        _id: user[0]._id,
+        accountType: user[0].accountType,
+      };
+      console.log(userData);
+
       return res.json({
         status: 200,
         message: "User is logged in.",
-        data: {
-          email: user.email,
-          username: user.username,
-          _id: user._id,
-          accountType: user.accountType,
-        },
+        data: userData,
       });
     } else {
       return res.json({ status: 400, message: "User is not logged in." });

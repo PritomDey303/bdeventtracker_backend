@@ -7,7 +7,7 @@ const eventSchema = new mongoose.Schema(
       trim: true,
     },
     event_date: {
-      type: Date,
+      type: String,
       required: true,
       trim: true,
     },
@@ -32,7 +32,7 @@ const eventSchema = new mongoose.Schema(
     event_type: {
       type: String,
       required: true,
-      enum: ["offline", "online", "both"],
+      //enum: ["offline", "online", "both"],
     },
     event_category: {
       type: String,

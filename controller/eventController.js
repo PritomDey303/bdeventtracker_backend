@@ -15,14 +15,18 @@ const replyHandler = new QueryHandler(Reply);
 /////////////
 //event object
 /////////////
+///////////////
+//cloudinary object
+//////////////////////////////
 const EventObj = new QueryHandler(Event);
 ///////////////////////
 //event image multer upload
 ///////////////////////
+
 async function eventImageMulterUpload(req, res, next) {
   try {
     const upload = await MulterUploader.uploader(
-      "event-images",
+      "event_banner_images",
       ["image/jpeg", "image/jpg", "image/png", "image/gif"],
       1000000,
       "Only .jpg, jpeg, .gif or .png format allowed!"
@@ -65,7 +69,6 @@ async function eventImageCloudinaryUpload(req, res, next) {
         fs.unlinkSync(path);
       }
       req.eventBannerImage = urls;
-      console.log(req.eventBannerImage);
       next();
     } else {
       res.json({
@@ -88,6 +91,8 @@ async function eventImageCloudinaryUpload(req, res, next) {
 //event create
 //////////////////////////
 async function eventCreate(req, res, next) {
+  const uploader = new CloudinaryUploader();
+
   try {
     const eventData = await EventObj.insertData({
       ...req.body,
@@ -107,7 +112,8 @@ async function eventCreate(req, res, next) {
       data: eventData,
     });
   } catch (err) {
-    const info = await MulterUploader.deleteImages(req.eventBannerImage);
+    console.log(err.message);
+    const info = await uploader.deleteImages(req.eventBannerImage);
     res.json({
       status: 500,
       message: "Error in creating event",
@@ -119,6 +125,8 @@ async function eventCreate(req, res, next) {
 //update event
 //////////////////////////
 async function updateEvent(req, res, next) {
+  const uploader = new CloudinaryUploader();
+
   try {
     const eventUpdatedData = await EventObj.findDataById(req.params.id);
     let event_banner_image = [];
@@ -138,7 +146,7 @@ async function updateEvent(req, res, next) {
       data: eventData,
     });
   } catch (err) {
-    const info = await MulterUploader.deleteImages(req.eventBannerImage);
+    const info = await uploader.deleteImages(req.eventBannerImage);
     res.json({
       status: 500,
       message: "Error in updating event",

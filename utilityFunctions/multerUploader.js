@@ -43,6 +43,7 @@ class MulterUploader {
         if (allowed_file_types.includes(file.mimetype)) {
           cb(null, true);
         } else {
+          console.log(error_msg);
           cb(createError(error_msg));
         }
       },
