@@ -20,7 +20,7 @@ const addEventValidators = [
     .trim()
     .optional(),
   check("event_location")
-    .isArray()
+    .isLength()
     .withMessage("Event_location is required")
     .optional(),
   check("event_description")
