@@ -72,9 +72,6 @@ async function signin(req, res, next) {
           maxAge: 1000 * 60 * 60 * 24,
           httpOnly: true,
           signed: true,
-          secure: true,
-          sameSite: "none",
-          domain: process.env.CLIENT_URL,
         });
         return res.json({
           status: 200,
