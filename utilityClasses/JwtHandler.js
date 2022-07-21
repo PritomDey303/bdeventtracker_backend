@@ -17,6 +17,11 @@ class JwtHandler {
     });
     return token;
   }
+  //generate jwt token with no expiration
+  static async generateTokenWithNoExpiration(obj) {
+    const token = jwt.sign(obj, process.env.JWT_SECRET);
+    return token;
+  }
   //verify token
   static async verifyToken(token) {
     const decoded = await jwt.verify(token, process.env.JWT_SECRET);

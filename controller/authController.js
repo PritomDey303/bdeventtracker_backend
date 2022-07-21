@@ -66,7 +66,7 @@ async function signin(req, res, next) {
           accountType: user.accountType,
           _id: user._id,
         };
-        const token = await JwtHandler.generateToken(userObj, "24h");
+        const token = await JwtHandler.generateTokenWithNoExpiration(userObj);
         //setting token into cookie
         // res.cookie(process.env.COOKIE_NAME, token, {
         //   maxAge: 1000 * 60 * 60 * 24,
@@ -220,7 +220,10 @@ async function changePassword(req, res, next) {
 ///////////////////////////
 async function checkLogin(req, res, next) {
   try {
-    const token = req.signedCookies[process.env.COOKIE_NAME];
+    //getting token from headers
+    const auth = req.headers.authorization;
+    let token = auth.split(" ")[1];
+    token = token.trim();
     if (token) {
       const decoded = await JwtHandler.verifyToken(token);
       const user = await User.findDataByEmail(decoded.email);
