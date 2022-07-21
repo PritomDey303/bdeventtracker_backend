@@ -60,6 +60,12 @@ async function signin(req, res, next) {
     } else {
       const match = await JwtHandler.comparePassword(password, user.password);
       if (match) {
+        userObj = {
+          email: user.email,
+          username: user.username,
+          accountType: user.accountType,
+          _id: user._id,
+        };
         const token = await JwtHandler.generateToken(userObj, "24h");
         //setting token into cookie
         // res.cookie(process.env.COOKIE_NAME, token, {
@@ -67,12 +73,7 @@ async function signin(req, res, next) {
         //   httpOnly: true,
         //   signed: true,
         // });
-        userObj = {
-          email: user.email,
-          username: user.username,
-          accountType: user.accountType,
-          _id: user._id,
-        };
+
         return res.json({
           status: 200,
           message: "Sign in successful.",
