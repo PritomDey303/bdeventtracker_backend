@@ -25,6 +25,7 @@ class JwtHandler {
   //verify token
   static async verifyToken(token) {
     const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+
     return decoded;
   }
 }

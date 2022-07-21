@@ -223,9 +223,11 @@ async function checkLogin(req, res, next) {
     //getting token from headers
     const auth = req.headers.authorization;
     let token = auth.split(" ")[1];
-    token = token.trim();
+
+    //console.log(token);
     if (token) {
       const decoded = await JwtHandler.verifyToken(token);
+
       const user = await User.findDataByEmail(decoded.email);
       if (user) {
         req.user = user;
@@ -235,10 +237,7 @@ async function checkLogin(req, res, next) {
       return res.redirect("/");
     }
   } catch (err) {
-    res.json({
-      status: 500,
-      message: err.message,
-    });
+    return res.redirect("/");
   }
 }
 ///////////////////////////
