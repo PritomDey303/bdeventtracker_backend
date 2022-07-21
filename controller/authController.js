@@ -60,23 +60,24 @@ async function signin(req, res, next) {
     } else {
       const match = await JwtHandler.comparePassword(password, user.password);
       if (match) {
+        const token = await JwtHandler.generateToken(userObj, "24h");
+        //setting token into cookie
+        // res.cookie(process.env.COOKIE_NAME, token, {
+        //   maxAge: 1000 * 60 * 60 * 24,
+        //   httpOnly: true,
+        //   signed: true,
+        // });
         userObj = {
           email: user.email,
           username: user.username,
           accountType: user.accountType,
           _id: user._id,
         };
-        const token = await JwtHandler.generateToken(userObj, "24h");
-        //setting token into cookie
-        res.cookie(process.env.COOKIE_NAME, token, {
-          maxAge: 1000 * 60 * 60 * 24,
-          httpOnly: true,
-          signed: true,
-        });
         return res.json({
           status: 200,
           message: "Sign in successful.",
           data: userObj,
+          token: token,
         });
       } else {
         return res.json({ status: 400, message: "Password is incorrect" });
