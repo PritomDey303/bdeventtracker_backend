@@ -68,11 +68,15 @@ async function signin(req, res, next) {
         };
         const token = await JwtHandler.generateTokenWithNoExpiration(userObj);
         //setting token into cookie
-        // res.cookie(process.env.COOKIE_NAME, token, {
-        //   maxAge: 1000 * 60 * 60 * 24,
-        //   httpOnly: true,
-        //   signed: true,
-        // });
+        const maxCookieAge = 7 * 24 * 60 * 60 * 1000;
+
+        res.cookie(process.env.COOKIE_NAME, token, {
+          expires: new Date(Date.now() + maxCookieAge),
+          httpOnly: true,
+          // signed: true,
+          secure: false,
+          sameSite: "none",
+        });
 
         return res.json({
           status: 200,
