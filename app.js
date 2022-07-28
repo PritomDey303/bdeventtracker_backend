@@ -14,7 +14,10 @@ dotenv.config();
 //cors
 app.use(
   cors({
-    origin: "*",
+    origin: [
+      "https://eventtrackerbangladesh.netlify.app",
+      "http://localhost:3000",
+    ],
     methods: ["GET", "POST", " DELETE", "UPDATE", "PUT", " PATCH"],
     credentials: true,
   })
