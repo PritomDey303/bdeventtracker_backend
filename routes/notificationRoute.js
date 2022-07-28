@@ -10,8 +10,8 @@ const {
 } = require("../controller/notificationController");
 const router = express.Router();
 
-router.get("/", checkLogin, getAllNotifications);
+router.get("/:page", checkLogin, getAllNotifications);
 router.put("/updatestatus", checkLogin, updateNotificationStatus);
-router.get("/unreadcount", checkLogin, getUnreadNotificationCount);
+router.get("/count/unreadcount", checkLogin, getUnreadNotificationCount);
 router.delete("/delete/:notificationId", checkLogin, deleteNotificationById);
 module.exports = router;

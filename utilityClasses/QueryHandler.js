@@ -6,8 +6,12 @@ class QueryHandler {
   async findData(query) {
     return await this.model.find(query);
   }
-  async findSortedData(query, sortBy, sortOrder) {
-    return await this.model.find(query).sort({ [sortBy]: sortOrder });
+  async findSortedByDateAndPaginatedData(query, page) {
+    return await this.model
+      .find(query)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * 10)
+      .limit(10);
   }
   async findDataById(id) {
     let objId = mongoose.Types.ObjectId(id);

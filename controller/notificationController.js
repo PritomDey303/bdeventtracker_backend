@@ -1,13 +1,13 @@
 const NotificationHandler = require("../utilityClasses/NotificationHandler");
 
 async function getAllNotifications(req, res, next) {
-  console.log("not");
   try {
+    const page = req.params.page || 1;
     //find notifications of user sorted by date
     const notifications = await NotificationHandler.getAllNotifications(
-      req.user._id
+      req.user._id,
+      page
     );
-    console.log(notifications);
 
     res.json({
       status: 200,
@@ -53,6 +53,7 @@ async function getUnreadNotificationCount(req, res, next) {
     const notificationCount = await NotificationHandler.unreadNotificationCount(
       req.user._id
     );
+    console.log(notificationCount);
     res.json({
       status: 200,
       message: "Unread notification count fetched successfully.",

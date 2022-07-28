@@ -33,16 +33,16 @@ class NotificationHandler {
     return false;
   }
   //get all notifications of reciever sorted by date time
-  static async getAllNotifications(user_id) {
+  static async getAllNotifications(user_id, page) {
     user_id = mongoose.Types.ObjectId(user_id);
 
-    const notificationData = await notificationObj.findSortedData(
-      {
-        receiver: user_id,
-      },
-      "createdAt",
-      -1
-    );
+    //find sorted by date time
+    const notificationData =
+      await notificationObj.findSortedByDateAndPaginatedData(
+        { receiver: user_id },
+        page
+      );
+
     return notificationData;
   }
 
