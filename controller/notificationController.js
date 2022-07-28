@@ -65,9 +65,49 @@ async function getUnreadNotificationCount(req, res, next) {
     });
   }
 }
+/////////////////////////////
+//deleteNotifications
+//////////////////////
+async function deleteAllNotification(req, res, next) {
+  try {
+    const notification = await NotificationHandler.deleteAllNotification(
+      req.user._id
+    );
+    res.json({
+      status: 200,
+      message: "All notifications deleted successfully.",
+      data: notification,
+    });
+  } catch (err) {
+    res.json({
+      status: 500,
+      message: "Error in deleting all notifications",
+    });
+  }
+}
 
+async function deleteNotificationById(req, res, next) {
+  try {
+    const notification = await NotificationHandler.deleteNotificationById(
+      req.params.notificationId,
+      req.user._id
+    );
+    res.json({
+      status: 200,
+      message: "Notification deleted successfully.",
+      data: notification,
+    });
+  } catch (err) {
+    res.json({
+      status: 500,
+      message: "Error in deleting notification",
+    });
+  }
+}
 module.exports = {
   getAllNotifications,
   updateNotificationStatus,
   getUnreadNotificationCount,
+  deleteNotificationById,
+  deleteAllNotification,
 };

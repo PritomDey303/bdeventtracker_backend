@@ -67,6 +67,22 @@ class NotificationHandler {
     });
     return notificationData.length;
   }
+  static async deleteAllNotifications(user_id) {
+    user_id = mongoose.Types.ObjectId(user_id);
+    const notificationData = await notificationObj.deleteAllData({
+      receiver: user_id,
+    });
+    return notificationData;
+  }
+  static async deleteNotificationById(notificationId, userid) {
+    notificationId = mongoose.Types.ObjectId(notificationId);
+    userid = mongoose.Types.ObjectId(userid);
+    const notificationData = await notificationObj.deleteData({
+      _id: notificationId,
+      receiver: userid,
+    });
+    return notificationData;
+  }
 }
 
 module.exports = NotificationHandler;
