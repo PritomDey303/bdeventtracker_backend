@@ -1,11 +1,13 @@
 const NotificationHandler = require("../utilityClasses/NotificationHandler");
 
 async function getAllNotifications(req, res, next) {
+  console.log("not");
   try {
     //find notifications of user sorted by date
     const notifications = await NotificationHandler.getAllNotifications(
       req.user._id
     );
+    console.log(notifications);
 
     res.json({
       status: 200,

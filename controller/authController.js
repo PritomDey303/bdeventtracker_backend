@@ -235,6 +235,7 @@ async function checkLogin(req, res, next) {
       const user = await User.findDataByEmail(decoded.email);
       if (user) {
         req.user = user;
+
         return next();
       }
     } else {
@@ -251,14 +252,12 @@ async function checkLoginStatus(req, res, next) {
   try {
     const user = await User.findData({ email: req.user.email });
     if (user) {
-      console.log(user);
       const userData = {
         email: user[0].email,
         username: user[0].username,
         _id: user[0]._id,
         accountType: user[0].accountType,
       };
-      console.log(userData);
 
       return res.json({
         status: 200,
