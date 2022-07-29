@@ -17,8 +17,32 @@ async function signup(req, res, next) {
     const { email, password, username, accountType } = req.body;
 
     const user = await User.findData({ email: email });
+
     if (user.length > 0) {
-      return res.json({ status: 400, message: "User already exists" });
+      if (user[0].isVerified) {
+        return res.json({ status: 400, message: "User already exists" });
+      } else {
+        await User.deleteDataById(user[0]._id);
+        //send new verification email
+        const hashedPassword = await JwtHandler.hashPassword(password);
+        const userObj = {
+          email: email,
+          password: hashedPassword,
+          username: username,
+          isVerified: false,
+          accountType: accountType,
+        };
+        const token = await JwtHandler.generateToken(userObj, "1h");
+        const body = await Email.verificationEmailBuilder(token);
+        const info = await Email.sendEmail(
+          email,
+          "Verify your email address.",
+          body
+        );
+        await User.insertData(userObj);
+
+        return res.json({ status: 200, message: "Verification email sent." });
+      }
     } else {
       const hashedPassword = await JwtHandler.hashPassword(password);
       const userObj = {
@@ -35,7 +59,7 @@ async function signup(req, res, next) {
         "Verify your email address.",
         body
       );
-      const newUser = await User.insertData(userObj);
+      await User.insertData(userObj);
 
       return res.json({ status: 200, message: "Verification email sent." });
     }
