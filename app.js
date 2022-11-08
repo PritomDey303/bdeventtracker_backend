@@ -36,6 +36,7 @@ app.use("/event", require("./routes/eventRoute"));
 app.use("/comment", require("./routes/commentRoute"));
 app.use("/reply", require("./routes/replyRoute"));
 app.use("/notification", require("./routes/notificationRoute"));
+
 //notfound handler
 app.use(notFoundHandler);
 //error handler

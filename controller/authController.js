@@ -15,8 +15,9 @@ const Email = new EmailHandler();
 async function signup(req, res, next) {
   try {
     const { email, password, username, accountType } = req.body;
-
+    console.log(req.body);
     const user = await User.findData({ email: email });
+    console.log(user);
 
     if (user.length > 0) {
       if (user[0].isVerified) {
@@ -64,7 +65,7 @@ async function signup(req, res, next) {
       return res.json({ status: 200, message: "Verification email sent." });
     }
   } catch (err) {
-    console.log(err.message);
+    console.log(err.message + "here");
     res.json({
       status: 500,
       message: err.message,
@@ -251,15 +252,16 @@ async function checkLogin(req, res, next) {
     //getting token from headers
     const auth = req.headers.authorization;
     let token = auth.split(" ")[1];
-
+    // console.log(token);
     //console.log(token);
     if (token) {
       const decoded = await JwtHandler.verifyToken(token);
 
       const user = await User.findDataByEmail(decoded.email);
       if (user) {
+        //   console.log(user._id);
         req.user = user;
-
+        //console.log(req.user);
         return next();
       }
     } else {
@@ -292,6 +294,7 @@ async function checkLoginStatus(req, res, next) {
       return res.json({ status: 400, message: "User is not logged in." });
     }
   } catch (err) {
+    console.log(err, "error");
     res.json({
       status: 500,
       message: err.message,

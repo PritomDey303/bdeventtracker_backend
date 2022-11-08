@@ -8,6 +8,10 @@ const {
   updateEvent,
   deleteEvent,
   getAllEvents,
+  getFilteredEventData,
+  getEventsByLatLong,
+  getEventById,
+  getEventsByUserId,
 } = require("../controller/eventController");
 const {
   addEventValidators,
@@ -28,7 +32,9 @@ router.post(
 );
 
 router.get("/", getAllEvents);
-router.post("/filteredevent", getFilteredEvents);
+router.get("/filter", getFilteredEventData);
+router.get("/latlong", getEventsByLatLong);
+router.get("/your-events/:id", getEventsByUserId);
 router.post(
   "/update",
   checkLogin,
@@ -38,6 +44,7 @@ router.post(
   addEventValidationHandler,
   updateEvent
 );
+router.get("/singleevent/:id", getEventById);
 
-router.delete("/delete/:event_id", checkLogin, deleteEvent);
+router.delete("/delete/:event_id", deleteEvent);
 module.exports = router;

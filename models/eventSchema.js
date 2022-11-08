@@ -9,7 +9,9 @@ const eventSchema = new mongoose.Schema(
     event_date: {
       type: String,
       required: true,
+
       trim: true,
+     
     },
     event_time: {
       type: String,
@@ -20,6 +22,15 @@ const eventSchema = new mongoose.Schema(
       type: Array,
       required: true,
     },
+    location: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+      },
+      coordinates: { type: [Number], required: true },
+    },
+
     event_description: {
       type: String,
       required: true,
@@ -70,5 +81,8 @@ const eventSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+eventSchema.index({ location: "2dsphere" });
 const Event = mongoose.model("Event", eventSchema);
 module.exports = Event;
+
+//event date auto generate

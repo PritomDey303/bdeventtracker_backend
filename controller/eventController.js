@@ -34,6 +34,7 @@ async function eventImageMulterUpload(req, res, next) {
 
     upload.any()(req, res, (err) => {
       if (err) {
+        console.log(err);
         res.json({
           status: 500,
           message: err.message,
@@ -53,6 +54,7 @@ async function eventImageMulterUpload(req, res, next) {
 //event image cloudinary uploader
 //////////////////////
 async function eventImageCloudinaryUpload(req, res, next) {
+  console.log("event image cloudinary upload");
   try {
     const uploader = new CloudinaryUploader();
     if (req.method === "POST") {
@@ -64,10 +66,11 @@ async function eventImageCloudinaryUpload(req, res, next) {
           path,
           "bdeventtracker/event-images"
         );
-
+        console.log(newPath);
         urls.push(newPath);
         fs.unlinkSync(path);
       }
+      console.log(urls);
       req.eventBannerImage = urls;
       next();
     } else {
@@ -77,6 +80,7 @@ async function eventImageCloudinaryUpload(req, res, next) {
       });
     }
   } catch (err) {
+    console.log("error");
     for (let file of req.files) {
       const { path } = file;
       fs.unlinkSync(path);
@@ -91,11 +95,24 @@ async function eventImageCloudinaryUpload(req, res, next) {
 //event create
 //////////////////////////
 async function eventCreate(req, res, next) {
+  console.log("event create");
   const uploader = new CloudinaryUploader();
 
   try {
+    const locationData = JSON.parse(req.body.event_location);
+    let lat = locationData[0].lat;
+    let lng = locationData[0].lng;
+    //convert lat long to number
+    lat = Number(lat);
+    lng = Number(lng);
+    console.log(locationData);
     const eventData = await EventObj.insertData({
       ...req.body,
+      location: {
+        type: "Point",
+        coordinates: [lng, lat],
+      },
+
       user_id: mongoose.Types.ObjectId(req.user._id),
       event_banner_image: req.eventBannerImage,
     });
@@ -159,7 +176,9 @@ async function updateEvent(req, res, next) {
 //////////////////////////
 async function getAllEvents(req, res, next) {
   try {
-    const events = await EventObj.findData({});
+    const events = await EventObj.findData({
+      event_date: { $gte: new Date().toLocaleDateString("en-GB") },
+    });
     res.json({
       status: 200,
       message: "All events fetched successfully.",
@@ -195,18 +214,20 @@ async function getEventById(req, res, next) {
 //get events by user id
 //////////////////////////
 async function getEventsByUserId(req, res, next) {
+  //console.log(req.params);
   try {
-    const events = await EventObj.findSortedData(
-      { user_id: req.params.id },
-      event_date,
-      desc
-    );
+    //find sorted by date events by user id\
+    const events = await EventObj.findData({
+      user_id: mongoose.Types.ObjectId(req.params.id),
+    });
+
     res.json({
       status: 200,
       message: "Events fetched successfully.",
       data: events,
     });
   } catch (err) {
+    console.log(err.message);
     res.json({
       status: 500,
       message: "Error in fetching events",
@@ -215,30 +236,21 @@ async function getEventsByUserId(req, res, next) {
 }
 
 ////////////////////////////////////////////
+
 //get filtered event
 ////////////////////////////////////////////
-async function getFilteredEvents(req, res, next) {
+async function getFilteredEventData(req, res, next) {
   try {
-    const {
-      event_name,
-      event_type,
-      start_date,
-      end_date,
-      lat,
-      lng,
-      distance,
-      limit,
-    } = req.body;
-    const events = await EventObj.getFilteredEventData(
-      event_name,
-      event_type,
-      start_date,
-      end_date,
-      lat,
-      lng,
-      distance,
-      limit
-    );
+    console.log(req.query);
+    const eventName = req.query.event_name;
+    const eventCategory = req.query.event_category;
+    const eventType = req.query.event_type;
+    const events = await EventObj.findData({
+      event_name: { $regex: eventName, $options: "i" },
+      event_category: { $regex: eventCategory, $options: "i" },
+      event_type: { $regex: eventType, $options: "i" },
+      event_date: { $gte: new Date().toLocaleDateString("en-GB") },
+    });
     res.json({
       status: 200,
       message: "Events fetched successfully.",
@@ -251,25 +263,59 @@ async function getFilteredEvents(req, res, next) {
     });
   }
 }
-
+//get location filtered event
+async function getEventsByLatLong(req, res, next) {
+  try {
+    const lat = Number(req.query.latitude);
+    const long = Number(req.query.longitude);
+    const radius = Number(req.query.radius);
+    //console.log(lat, long, radius);
+    const events = await EventObj.findData({
+      location: {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: [long, lat],
+          },
+          $maxDistance: radius,
+        },
+      },
+      event_date: { $gte: new Date().toLocaleDateString("en-GB") },
+    });
+    res.json({
+      status: 200,
+      message: "Events fetched successfully.",
+      data: events,
+    });
+  } catch (err) {
+    // console.log(err.message);
+    res.json({
+      status: 500,
+      message: "Error in fetching events",
+    });
+  }
+}
 //////////////////////////
 //delete event
 ///////////////////////////
 async function deleteEvent(req, res, next) {
   try {
-    const event = await EventObj.findDataById(req.params.id);
+    const uploader = new CloudinaryUploader();
+    const event = await EventObj.findDataById(req.params.event_id);
+    //console.log(event);
     const images = event.event_banner_image;
-    await EventObj.deleteDataById(req.params.id);
-    await CloudinaryUploader.deleteImages(images);
-
-    await commentHandler.deleteData({
-      event: mongoose.Types.ObjectId(req.params.id),
-    });
+    const info1 = await EventObj.deleteDataById(req.params.event_id);
+    const info2 = await await uploader.deleteImages(images);
+    console.log(info1, info2);
+    // await commentHandler.deleteData({
+    //   event: mongoose.Types.ObjectId(req.params.id),
+    // });
     res.json({
       status: 200,
       message: "Event deleted successfully.",
     });
   } catch (err) {
+    console.log(err.message);
     res.json({
       status: 500,
       message: "Error in deleting event",
@@ -284,7 +330,7 @@ module.exports = {
   getEventById,
   getEventsByUserId,
   updateEvent,
-  getFilteredEvents,
+  getFilteredEventData,
   deleteEvent,
+  getEventsByLatLong,
 };
-//delete reply and comment when event is deleted

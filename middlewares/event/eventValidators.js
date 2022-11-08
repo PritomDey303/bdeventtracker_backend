@@ -5,8 +5,7 @@ const addEventValidators = [
   check("event_name")
     .isLength({ min: 1 })
     .withMessage("Event_name is required")
-    .isAlpha("en-US", { ignore: " -" })
-    .withMessage("Event name must not contain anything other than alphabet")
+
     .trim()
     .optional(),
   check("event_date")
